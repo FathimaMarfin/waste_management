@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState, useEffect } from "react";
 
 export default function Home() {
   const currentMonth = useMemo(() => {
@@ -6,6 +6,37 @@ export default function Home() {
   }, []);
 
   const expectedDate = `28 ${currentMonth} 2026`;
+
+  // 🚛 Waste Ready State
+  const [isWasteReady, setIsWasteReady] = useState(false);
+  const [readyTime, setReadyTime] = useState(null);
+
+  // 🔥 Load saved state
+  useEffect(() => {
+    const savedStatus = localStorage.getItem("wasteReady");
+    const savedTime = localStorage.getItem("wasteReadyTime");
+
+    if (savedStatus === "true") {
+      setIsWasteReady(true);
+      setReadyTime(savedTime);
+    }
+  }, []);
+
+  // 🔥 Toggle handler
+  const handleWasteToggle = () => {
+    if (!isWasteReady) {
+      const now = new Date().toLocaleString();
+      setReadyTime(now);
+      localStorage.setItem("wasteReadyTime", now);
+    } else {
+      setReadyTime(null);
+      localStorage.removeItem("wasteReadyTime");
+    }
+
+    const newState = !isWasteReady;
+    setIsWasteReady(newState);
+    localStorage.setItem("wasteReady", newState);
+  };
 
   const wasteTypes = [
     "Plastic",
@@ -38,6 +69,61 @@ export default function Home() {
         <p className="text-gray-500 mt-2">
           Track your monthly waste pickups and stay eco-friendly.
         </p>
+      </div>
+
+      {/* 🚀 Waste Ready Card */}
+      <div className="bg-white rounded-2xl p-6 mb-8 shadow-[0_10px_35px_rgba(0,100,0,0.30)]">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+
+          <div>
+            <h3 className="text-lg font-semibold text-green-900 flex items-center gap-2">
+              🚛 Waste Pickup Status
+              <span
+                className={`text-xs px-3 py-1 rounded-full font-semibold ${
+                  isWasteReady
+                    ? "bg-green-100 text-green-700"
+                    : "bg-gray-200 text-gray-600"
+                }`}
+              >
+                {isWasteReady ? "READY" : "NOT READY"}
+              </span>
+            </h3>
+
+            <p className="text-gray-500 text-sm mt-1">
+              Mark when your household waste is ready for collection.
+            </p>
+
+            {isWasteReady && readyTime && (
+              <p className="text-xs text-green-700 mt-2">
+                ✅ Marked ready at: {readyTime}
+              </p>
+            )}
+          </div>
+
+          <button
+            onClick={handleWasteToggle}
+            className={`px-8 py-3 rounded-xl font-semibold transition-all duration-300
+              shadow-lg active:scale-95
+              ${
+                isWasteReady
+                  ? "bg-green-800 text-white hover:bg-green-900"
+                  : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+              }`}
+          >
+            {isWasteReady ? "✓ Waste Ready" : "Mark Waste Ready"}
+          </button>
+        </div>
+
+        {/* Progress bar */}
+        <div className="mt-5">
+          <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+            <div
+              className={`h-2 rounded-full transition-all duration-500 ${
+                isWasteReady ? "w-full bg-green-700" : "w-0 bg-green-700"
+              }`}
+            ></div>
+          </div>
+        </div>
       </div>
 
       {/* 🔷 Current Month */}
