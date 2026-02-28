@@ -1,24 +1,52 @@
+import React from "react";
+// ✅ FIXED: Single consolidated import for react-router-dom
 import { Routes, Route, Navigate } from "react-router-dom";
+
+// Components
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
-import Login from "./pages/Login";
-import Home from "./pages/Home";
-import Contact from "./pages/Contact";
-import About from "./pages/About";
-import Profile from "./pages/Profile"; // 1. Import Profile page
 
+// Pages
+import RoleSelection from "./pages/RoleSelection";
+import Login from "./pages/login2"; 
+import Home from "./pages/Home";
+import WorkerDashboard from "./pages/WorkerDashboard";
+import About from "./pages/About";
+import Profile from "./pages/Profile";
+import Contact from "./pages/Contact";
+
+/**
+ * ProtectedRoute Wrapper
+ * Ensures users are logged in before accessing private pages.
+ */
 function ProtectedRoute({ children }) {
   const isLoggedIn = localStorage.getItem("isLoggedIn");
-  return isLoggedIn ? children : <Navigate to="/" />;
+  // If not logged in, send them to the login page
+  return isLoggedIn ? children : <Navigate to="/login" />;
 }
 
 function App() {
   return (
     <Routes>
-      {/* Public Route */}
-      <Route path="/" element={<Login />} />
+      {/* 1. Entry Point: Role Selection */}
+      <Route path="/" element={<RoleSelection />} />
 
-      {/* Protected Dashboard Route */}
+      {/* 2. Authentication: Themed Login Page */}
+      <Route path="/login" element={<Login />} />
+
+      {/* 3. Worker Protected Route */}
+      <Route
+        path="/worker-dashboard"
+        element={
+          <ProtectedRoute>
+            <Navbar /> 
+            <WorkerDashboard /> 
+            <Footer />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* 4. User Protected Routes */}
       <Route
         path="/home"
         element={
@@ -28,17 +56,6 @@ function App() {
         }
       />
 
-      {/* Protected Contact Route */}
-      <Route
-        path="/contact"
-        element={
-          <ProtectedRoute>
-            <Navbar /> <Contact /> <Footer />
-          </ProtectedRoute>
-        }
-      />
-
-      {/* Protected About Route */}
       <Route
         path="/about"
         element={
@@ -48,7 +65,6 @@ function App() {
         }
       />
 
-      {/* 2. Added Protected Profile Route */}
       <Route
         path="/profile"
         element={
@@ -57,6 +73,18 @@ function App() {
           </ProtectedRoute>
         }
       />
+
+      <Route
+        path="/contact"
+        element={
+          <ProtectedRoute>
+            <Navbar /> <Contact /> <Footer />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* 5. Fallback: Redirect unknown URLs back to the start */}
+      <Route path="*" element={<Navigate to="/" />} />
     </Routes>
   );
 }
