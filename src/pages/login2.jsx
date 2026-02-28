@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -45,7 +45,15 @@ localStorage.setItem("houseNumber", identifier); // Saves HN-101, etc.
           </div>
           <button type="submit" className="w-full bg-[#0a5d2c] text-white py-3 rounded-lg font-semibold hover:bg-[#084a23] transition">Sign in</button>
         </form>
-      </div>
+
+<div  className=" mt-100 text-center">
+            <p className="text-gray-500 text-sm">
+              New to Shuchi?{" "}
+              <Link to="/signup" className="text-[#0a5d2c] font-bold hover:underline">
+                Create an Account
+              </Link>
+            </p>
+          </div>      </div>
     </div>
   );
 }

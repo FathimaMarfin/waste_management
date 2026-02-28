@@ -1,18 +1,15 @@
-import pkg from "pg";
-import dotenv from "dotenv";
+const mongoose = require('mongoose');
+require('dotenv').config();
 
-dotenv.config();
+const connectDB = async () => {
+  try {
+    // Uses the MONGO_URI from your .env file
+    await mongoose.connect(process.env.MONGO_URI);
+    console.log("✅ MongoDB Connected Successfully");
+  } catch (err) {
+    console.error("❌ MongoDB Connection Failed:", err.message);
+    process.exit(1);
+  }
+};
 
-const { Pool } = pkg;
-
-export const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: {
-    rejectUnauthorized: false,
-  },
-});
-
-// 🔥 Test connection immediately
-pool.connect()
-  .then(() => console.log("✅ Neon DB Connected"))
-  .catch((err) => console.error("❌ Neon DB Failed:", err.message));
+module.exports = connectDB;
